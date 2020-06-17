@@ -22,12 +22,13 @@ const initailFormErrors ={
   terms: '',
 }
  
-const initialDisabled = false
+const initialDisabled = false 
+const initailUsers = []
 
 function App() {
 const [values , setValues] = useState(initailFormValues)
-const [errors , setErrors] = useState(initailFormErrors)
-const [users , setUsers] = useState([])
+const [formErrors , setFormErrors] = useState(initailFormErrors)
+const [users , setUsers] = useState(initailUsers)
 const [disabled, setDisabled] = useState(initialDisabled)
 
 
@@ -36,24 +37,24 @@ const getUsers = () =>{
   axios.get('https://reqres.in/api/users')
   .then( response =>{
     setUsers(response.data.data)
-    debugger
+   
   })
   .catch(err => {
     debugger
   })
 }
-useEffect(() =>{
-  getUsers()
-},[])
 
 const postNewUser = newUser =>{
     axios.post('https://reqres.in/api/users', newUser)
     .then(response =>{
       setUsers([...users, response.data])
       debugger
+      console.log(users)
+      console.log(response.data)
+      
     })
     .catch(err =>{
-      debugger
+     debugger
     })
     .finally(()=>{
       setValues(initailFormValues)
@@ -62,19 +63,32 @@ const postNewUser = newUser =>{
 
 
 
-
-
-
-
-
 const onInputChange = evt =>{
   const {name , value} = evt.target
+  Yup
+  .reach(formSchema, name)
+  
+  .validate(value)
+  
+  .then(() => {
+    setFormErrors({
+      ...formErrors,
+      [name]: ""
+    });
+  })
+ 
+  .catch(err => {
+    setFormErrors({
+      ...formErrors,
+      [name]: err.errors[0] 
+    })
+  })
+    
   setValues({
     ...values,
     [name]:value,
     
   })
-  debugger
 
 }
 
@@ -88,9 +102,15 @@ const onSubmit = evt =>{
     terms:Object.keys(values.terms).filter(checked => 
       (values.terms === true))
   }
-  debugger
+  
   postNewUser(newUser)
+  debugger
 }
+
+useEffect(() =>{
+  getUsers()
+},[])
+
 
 const onCheckboxChange = evt =>{
     const{name , checked} = evt.target
@@ -101,7 +121,13 @@ const onCheckboxChange = evt =>{
     })
 }
 
-console.log(users)
+useEffect(() => {
+  formSchema.isValid(values).then(valid => {
+    setDisabled(!valid);
+  })
+}, [values])
+
+
   return (
     <div className="App">
      <Form 
@@ -110,13 +136,13 @@ console.log(users)
      onSubmit={onSubmit}
      onCheckboxChange={onCheckboxChange}
      disabled={disabled}
-     errors={errors}
+     errors={formErrors}
      />
 
      {
        users.map(user => {
          return (
-           <User  details={user} />
+           <User keys={user.id} details={user} />
          )
        })
      }
