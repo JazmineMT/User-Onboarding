@@ -10,11 +10,11 @@ return (
         <h1>New User Sign-up</h1>
         <button disabled={disabled }>Submit</button>
         <div>
-            <div>{errors.email}</div>
-            <div>{errors.first_name}</div>
-            <div>{errors.last_name}</div>
-            <div>{errors.password}</div>
-            <div>{errors.terms}</div>
+            <div id='errorEmail'>{errors.email}</div>
+            <div id='errorFirstName' >{errors.first_name}</div>
+            <div id='errorLastName' >{errors.last_name}</div>
+            <div id='errorPassword' >{errors.password}</div>
+            <div id='errorTerms' >{errors.terms}</div>
         </div>
         <label> First Name
             <input
